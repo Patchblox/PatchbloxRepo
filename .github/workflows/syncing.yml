@@ -16,6 +16,11 @@ jobs:
         with:
           fetch-depth: 0  # To fetch the full commit history
 
+      - name: Set up Git identity
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Add upstream remote
         run: git remote add upstream https://github.com/microsoft/winget-pkgs.git
 
