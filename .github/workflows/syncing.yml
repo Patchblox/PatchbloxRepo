@@ -1,0 +1,33 @@
+name: Sync with Upstream
+
+on:
+  schedule:
+    # Runs every 5 minutes
+    - cron: "*/5 * * * *"
+  workflow_dispatch:  # Allows manual triggering from GitHub UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # To fetch the full commit history
+
+      - name: Add upstream remote
+        run: git remote add upstream https://github.com/microsoft/winget-pkgs.git
+
+      - name: Fetch upstream changes
+        run: git fetch upstream
+
+      - name: Rebase onto upstream's master (accept upstream version in case of conflicts)
+        run: |
+          git checkout master
+          git rebase upstream/master -X theirs
+
+      - name: Push changes
+        run: git push origin main --force-with-lease
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
